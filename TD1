@@ -1,0 +1,284 @@
+FibonacciNaive(n):
+    if n <= 1:
+        return n
+
+    return FibonacciNaive(n - 1)
+           + FibonacciNaive(n - 2)
+
+time complexity : O(2^n)
+
+
+
+FibonacciDynamic(n):
+    if n <= 1:
+        return n
+
+    fib[0] = 0
+    fib[1] = 1
+
+    for i from 2 to n:
+        fib[i] = fib[i - 1] + fib[i - 2]
+
+    return fib[n]
+
+Time complexity  : O(n)
+Space complexity : O(n)
+
+
+Exercise 2 : Prime Numbers 
+
+
+IsPrime(k):
+    if k < 2:
+        return false
+
+    for divisor from 2 while divisor * divisor <= k:
+        if k is divisible by divisor:
+            return false
+
+    return true
+
+
+CountPrimesNaive(n):
+    count = 0
+
+    for k from 2 to n - 1:
+        if IsPrime(k):
+            count = count + 1
+
+    return count
+
+Time complexity : O(n*(n)^(1/2))
+
+
+
+
+
+CountPrimesSieve(n):
+    if n <= 2:
+        return 0
+
+    Create an array isPrime[0 ... n - 1]
+    Set every element to true
+
+    isPrime[0] = false
+    isPrime[1] = false
+
+    for p from 2 while p * p < n:
+        if isPrime[p] == true:
+            for multiple from p * p to n - 1,
+                increasing by p:
+                isPrime[multiple] = false
+
+    count = 0
+
+    for k from 2 to n - 1:
+        if isPrime[k] == true:
+            count = count + 1
+
+    return count
+
+Time complexity  : O(n*log(log n))
+Space complexity : O(n)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/* EXERCISE 1: FIBONACCI */
+
+/* Naive recursive algorithm: O(2^n) */
+long long fibonacci_naive(int n)
+{
+    if (n <= 1) {
+        return n;
+    }
+
+    return fibonacci_naive(n - 1) + fibonacci_naive(n - 2);
+}
+
+/* Dynamic programming algorithm: O(n) time, O(n) space */
+long long fibonacci_dynamic(int n)
+{
+    if (n <= 1) {
+        return n;
+    }
+
+    long long *fib = malloc((n + 1) * sizeof(long long));
+
+    if (fib == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fib[0] = 0;
+    fib[1] = 1;
+
+    for (int i = 2; i <= n; i++) {
+        fib[i] = fib[i - 1] + fib[i - 2];
+    }
+
+    long long result = fib[n];
+
+    free(fib);
+    return result;
+}
+
+
+/* EXERCISE 2: PRIME NUMBERS */
+
+/* Return 1 if number is prime, 0 otherwise. */
+int is_prime(int number)
+{
+    if (number < 2) {
+        return 0;
+    }
+
+    for (int divisor = 2;
+         divisor * divisor <= number;
+         divisor++) {
+
+        if (number % divisor == 0) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+/* Naive algorithm: O(n * sqrt(n)) */
+int count_primes_naive(int n)
+{
+    int count = 0;
+
+    for (int number = 2; number < n; number++) {
+        if (is_prime(number)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+/* Sieve of Eratosthenes:
+   O(n * log(log(n))) time, O(n) space. */
+int count_primes_sieve(int n)
+{
+    if (n <= 2) {
+        return 0;
+    }
+
+    char *isPrime = malloc(n * sizeof(char));
+
+    if (isPrime == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Initially, consider every number prime. */
+    for (int i = 0; i < n; i++) {
+        isPrime[i] = 1;
+    }
+
+    isPrime[0] = 0;
+    isPrime[1] = 0;
+
+    /* Eliminate multiples of each prime. */
+    for (int p = 2; p * p < n; p++) {
+        if (isPrime[p]) {
+            for (int multiple = p * p;
+                 multiple < n;
+                 multiple += p) {
+
+                isPrime[multiple] = 0;
+            }
+        }
+    }
+
+    /* Count the numbers that remain prime. */
+    int count = 0;
+
+    for (int i = 2; i < n; i++) {
+        if (isPrime[i]) {
+            count++;
+        }
+    }
+
+    free(isPrime);
+    return count;
+}
+
+
+/* MAIN: TESTS AND RUNTIME COMPARISONS */
+
+int main(void)
+{
+    clock_t start;
+    clock_t end;
+
+    /* Exercise 1 */
+    int fibonacci_n = 40;
+
+    start = clock();
+    long long naive_result = fibonacci_naive(fibonacci_n);
+    end = clock();
+
+    double naive_time =
+        (double)(end - start) / CLOCKS_PER_SEC;
+
+    /* Repeat the dynamic algorithm to measure its short runtime. */
+    int repetitions = 10000;
+    volatile long long dynamic_result = 0;
+
+    start = clock();
+
+    for (int i = 0; i < repetitions; i++) {
+        dynamic_result = fibonacci_dynamic(fibonacci_n);
+    }
+
+    end = clock();
+
+    double dynamic_time =
+        (double)(end - start) / CLOCKS_PER_SEC / repetitions;
+
+    printf("EXERCISE 1 - FIBONACCI\n");
+    printf("n = %d\n", fibonacci_n);
+    printf("Naive result: %lld\n", naive_result);
+    printf("Dynamic result: %lld\n", dynamic_result);
+    printf("Naive runtime: %.6f seconds (one call)\n", naive_time);
+    printf("Dynamic runtime: %.9f seconds (average per call)\n\n",
+           dynamic_time);
+
+
+    /* Exercise 2 */
+    int n = 100000;
+
+    start = clock();
+    int naive_count = count_primes_naive(n);
+    end = clock();
+
+    naive_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+    start = clock();
+    int sieve_count = count_primes_sieve(n);
+    end = clock();
+
+    double sieve_time =
+        (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("EXERCISE 2 - PRIME NUMBERS\n");
+    printf("Count primes strictly less than %d\n", n);
+    printf("Naive count: %d\n", naive_count);
+    printf("Sieve count: %d\n", sieve_count);
+    printf("Naive runtime: %.6f seconds\n", naive_time);
+    printf("Sieve runtime: %.6f seconds\n", sieve_time);
+
+    if (naive_count == sieve_count) {
+        printf("Both algorithms give the same result.\n");
+    } else {
+        printf("Error: results are different.\n");
+    }
+
+    return 0;
+}
