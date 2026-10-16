@@ -1,5 +1,5 @@
 fonction is_sorted_increasing(A):
-    n ← longueur(A)
+    n <-- longueur(A)
     pour i de 0 à n-2:
         si A[i] > A[i+1]:
             retourner Faux
