@@ -58,7 +58,7 @@ CountPrimesSieve(n):
     if n <= 2:
         return 0
 
-    Create an array isPrime[0 ... n - 1]
+    Create an array isPrime[0,..., n - 1]
     Set every element to true
 
     isPrime[0] = false
