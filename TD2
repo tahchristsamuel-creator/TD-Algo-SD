@@ -1,0 +1,26 @@
+fonction is_sorted_increasing(A):
+    n ← longueur(A)
+    pour i de 0 à n-2:
+        si A[i] > A[i+1]:
+            retourner Faux
+    retourner Vrai
+
+
+fonction jump_search(A, x):
+    n <-- longueur(A)
+    step <-- entier( racine(n) )
+    prev <-- 0
+
+    # Phase de saut
+    tant que prev < n ET A[min(step, n)-1] < x:
+        prev <-- step
+        step <-- step + entier( racine(n) )
+        si prev ≥ n:
+            retourner -1
+
+    # Recherche linéaire dans le bloc
+    pour i de prev à min(step, n)-1:
+        si A[i] = x:
+            retourner i
+
+    retourner -1
